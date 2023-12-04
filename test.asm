@@ -6,7 +6,7 @@
 # Các định nghĩa biến
 myArr:		.space 40					# mảng chứa 10 số
 buffer:		.space 40					# buffer để đọc file
-binf:		.asciiz "full path of file"	# tên file đọc
+binf:		.asciiz "D:/DOWNLOADS/Mars4_5/INT10.BIN"	# tên file đọc
 space:		.asciiz " "
 newLine:	.asciiz "\n"
 # Các câu nhắc in ra màn hình
@@ -170,21 +170,16 @@ end_min:
 	lw	$s1, 4($sp)		# trả giá trị về cho s1
 	addiu	$sp, $sp, 12
 	jr	$ra
-#----------------------------------------------------
+#---------------------------------------------------------------------
 # hàm min: đảo vị trí hai phần tử
-# In: a0 = addr(myArr[i]), a1 = addr(min), a2 = min
+# In: a0 = addr(myArr[i]), a1 = myArr[i], a2 = addr(min), a3 = min
 # Out: none
 # Reserved: none
 #----------------------------------------------------	
 swap:
   # Đảo vị trí myArr[i] <-> min
-	addiu	$sp, $sp, -4
-	sw	$s0, 0($sp)		# lưu s0 vào stack
-	lw	$s0, 0($a0)		# s0 = myArr[i]
-	sw	$a2, 0($a0)		# myArr[i] = min
-	sw	$s0, 0($a1)		# min = s0
-	lw	$s0, 0($sp)		# trả giá trị về cho s0
-	addiu	$sp, $sp, 4
+	sw	$a3, 0($a0)	# lưu giá trị của min vào địa chỉ của myArr[i]
+	sw	$a1, 0($a2)	# lưu giá trị của myArr[i] vào địa chỉ của min
 	jr	$ra
 #----------------------------------------
 # hàm sort: sắp xếp theo Selection Sort
@@ -209,8 +204,9 @@ loop_s:	beq	$s1, 9, end_sort	# kiểm tra (i == 9)
 	beq	$s0, $v1, continue_s	# kiểm tra (myArr[i] == min)
     # Gọi hàm swap	
 	move	$a0, $s0
-	move	$a1, $v1
-	move	$a2, $v0
+	lw	$a1, 0($s0)
+	move	$a2, $v1
+	move	$a3, $v0
 	jal	swap
   # In mảng vừa có thay đổi thứ tự
     # Gọi hàm print
